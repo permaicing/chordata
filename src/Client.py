@@ -1,6 +1,6 @@
 import socket
 
-class Cliente:
+class Client:
     def __init__(self, _info):
         self.sc = socket.socket()
         self.info = _info

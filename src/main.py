@@ -1,5 +1,4 @@
 import threading
-import readchar
 import sys
 from time import sleep
 from Data_com import DataCom
@@ -22,7 +21,7 @@ if __name__ == "__main__":
     print(info)
     print("**************** [<<ENTER>>=CONECTAR] ****************")
 
-    enter = readchar.readkey() == '\r'
+    enter = input().strip() == ''
     if (enter):
         print("**************** [<<EXIT>>=SAIR] ****************")
         tclient = threading.Thread(target=cliente.run)
@@ -30,8 +29,8 @@ if __name__ == "__main__":
         tserver.join()
         tclient.join()
         print("**************** FIM CONECTADO ****************")
-        print(repr(readchar.readkey()))
+        print(input().strip())
     else:
         print("**************** ABORT ANTES DE CONECTAR ****************")
         cliente.close()
-        print(repr(readchar.readkey()))
+        print(input().strip())

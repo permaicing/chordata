@@ -36,7 +36,7 @@ class DataCom:
         self.antecessor_name = "NO[{0}]".format(self.MAP[Ant_I][0]+DataCom.FAIXA + DataCom.SPORT)
 
         # self.Fi, self.Fj = 0, 0
-        self.exit(I)
+        sys.exit(I)
         
         return (I)
 

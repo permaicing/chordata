@@ -1,7 +1,7 @@
 import socketserver
 import sys
 
-class Servidor:
+class Server:
     prompt = "HOST"
     
     def __init__(self, _info):
