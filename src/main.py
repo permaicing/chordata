@@ -1,11 +1,39 @@
 import threading
 import sys
 from time import sleep
+from node import Node
+from utils import parse_int
+"""
 from Data_com import DataCom
 from Server import Server
 from Client import Client
+"""
+
 
 if __name__ == "__main__":
+    if len(sys.argv) < 2:
+        print(f'Uso: {sys.argv[0]} PORTA')
+        sys.exit(1)
+    port = parse_int(sys.argv[1])
+
+    node = Node(port)
+    server = threading.Thread(target=node.serve, daemon=True)
+    server.start()
+
+    while True:
+        cmd = input('|> ').strip().lower()
+
+        if cmd.startswith('connect '):
+            cmd, port = cmd.split()
+            port = parse_int(port)
+            if node.connect(port):
+                print(f'Conectado ao nó #{port}.')
+            else:
+                print(f'Não foi possível conectado ao nó #{port}.')
+        elif cmd == 'exit':
+            node.dismiss()
+            break
+    """
     numDePares = 2
     if len(sys.argv) >= 2:
         numDePares = int(sys.argv[1])
@@ -34,3 +62,4 @@ if __name__ == "__main__":
         print("**************** ABORT ANTES DE CONECTAR ****************")
         cliente.close()
         print(input().strip())
+    """
