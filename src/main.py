@@ -30,6 +30,15 @@ if __name__ == "__main__":
                 print(f'Conectado ao nó #{port}.')
             else:
                 print(f'Não foi possível conectado ao nó #{port}.')
+        elif cmd.startswith('query '):
+            cmd, k = cmd.split()
+            k = parse_int(k)
+            if node.contains_key(k):
+                print(f'Chave {k} presente no nó atual.')
+            else:
+                result = \
+                    node.query((('%i|' % (k))+node.host+'|'+str(node.port)+'|detentor').encode())
+                print(result)
         elif cmd == 'exit':
             node.dismiss()
             break
