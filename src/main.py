@@ -29,7 +29,7 @@ if __name__ == "__main__":
             if node.connect(port):
                 print(f'Conectado ao nó #{port}.')
             else:
-                print(f'Não foi possível conectado ao nó #{port}.')
+                print(f'Não foi possível conectar-se ao nó #{port}.')
         elif cmd.startswith('query '):
             cmd, k = cmd.split()
             k = parse_int(k)
@@ -37,8 +37,11 @@ if __name__ == "__main__":
                 print(f'Chave {k} presente no nó atual.')
             else:
                 result = \
-                    node.query((('%i|' % (k))+node.host+'|'+str(node.port)+'|detentor').encode())
-                print(result)
+                    node.query((('%i|' % (k))+node.host+'|'+str(node.port)+'|detentor').encode()).strip()
+                if result:
+                    k, _, port, cmd = result.decode().split('|')
+                    if cmd == 'detem':
+                        print(f'Chave {k} encontrada no nó {port}.')
         elif cmd == 'exit':
             node.dismiss()
             break

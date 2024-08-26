@@ -1,4 +1,5 @@
 import socket
+import select
 from time import sleep
 from utils import *
 
@@ -18,7 +19,7 @@ class Node:
         self.pred.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         self.pred.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEPORT, 1)
         self.pred.bind((self.host, self.port))
-        self.pred.listen(1)
+        self.pred.listen()
 
         self.succ = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
@@ -28,10 +29,15 @@ class Node:
     def query(self, data: bytes) -> None:
         self.succ.sendall(data)
         sleep(0.01)
-        data = self.succ.recv(1024).strip()
-        if data:
-            return data
-        return b''
+        try:
+            r, _, _ = select.select([self.succ], [], [], 0.01)
+            if r:
+                data = self.succ.recv(1024).strip()
+                if data:
+                    return data
+            return b''
+        except:
+            return b''
 
     def serve(self) -> None:
         self.serving = True
@@ -40,21 +46,21 @@ class Node:
             while self.serving:
                 data = conn.recv(1024).strip()
                 if not data:
-                    print('D')
                     break
-                print(data.decode())
                 k, ip, port, cmd = data.decode().split('|')
                 
                 if cmd == 'detentor':
                     if ip == self.host and port == str(self.port):
                         print(f'Chave {k} não encontrada.')
-                        self.pred.send(b'\0')
+                        #conn.send(b'C')
                     elif self.contains_key(int(k)):
                         msg = \
-                            (k+'|'+self.host+'|'+str(self.port)+'|detém').encode()
-                        self.pred.send(msg)
+                            (k+'|'+self.host+'|'+str(self.port)+'|detem').encode()
+                        conn.send(msg)
                     else:
-                        self.pred.send(self.query(data))
+                        conn.send(self.query(data))
+                #elif cmd == 'detém':
+                #    print(f'Chave {k} encontrada no nó #{port}')
 
     def connect(self, port: int) -> bool:
         try:
