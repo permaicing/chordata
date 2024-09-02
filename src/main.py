@@ -16,9 +16,12 @@ if __name__ == "__main__":
         sys.exit(1)
     port = parse_int(sys.argv[1])
 
+    allNodes = [port]
+
     node = Node(port)
     server = threading.Thread(target=node.serve, daemon=True)
     server.start()
+    node.calculateFingerTable(allNodes)
 
     while True:
         cmd = input('|> ').strip().lower()
@@ -28,6 +31,8 @@ if __name__ == "__main__":
             port = parse_int(port)
             if node.connect(port):
                 print(f'Conectado ao nó #{port}.')
+                allNodes.append(port)
+                node.calculateFingerTable(allNodes)
             else:
                 print(f'Não foi possível conectar-se ao nó #{port}.')
         elif cmd.startswith('query '):
@@ -42,6 +47,8 @@ if __name__ == "__main__":
                     k, _, port, cmd = result.decode().split('|')
                     if cmd == 'detem':
                         print(f'Chave {k} encontrada no nó {port}.')
+        elif cmd == 'finger':
+            node.showFingerTable()
         elif cmd == 'exit':
             node.dismiss()
             break

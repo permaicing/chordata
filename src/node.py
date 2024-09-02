@@ -23,6 +23,8 @@ class Node:
 
         self.succ = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
+        self.fingerTable = []
+
     def contains_key(self, key: int) -> bool:
         return key in self.resources.keys()
     
@@ -73,3 +75,30 @@ class Node:
         self.serving = self.connected = False
         self.pred.close()
         self.succ.close()
+
+    def calculateFingerTable(self, nodes: list):
+        nodeId = self.port - BASE_PORT 
+        bitNum = 64 
+        self.fingerTable = [] 
+        
+        if nodeId not in nodes:
+            nodes.append(nodeId)
+        
+        if not nodes:  
+            raise ValueError("A lista de nós está vazia!")
+
+        for i in range(1, 7): 
+            fingerStart = (nodeId + 2**(i-1)) % bitNum  
+            successor = None
+        
+            for node in sorted(nodes):
+                if node >= fingerStart:
+                    successor = node
+                    break
+            if successor is None:
+                successor = sorted(nodes)[0]
+            
+            self.fingerTable.append(successor)
+
+    def showFingerTable(self):
+        print(f"Finger Table: {self.fingerTable}")
